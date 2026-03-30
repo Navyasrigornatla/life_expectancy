@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Life Expectancy Predictor</title>
+</head>
+<body>
+    <h2>Paste CSV (comma-separated values)</h2>
+    <p>Order: Population, Polio, Total_expenditure, Percentage_expenditure, Infant_deaths, Alcohol, Diphtheria, Year, BMI, Schooling, Thinness_5_9_years, Under_five_deaths, Income_composition_of_resources, Adult_Mortality, HIV_AIDS</p>
+    
+    <textarea id="csv_input" rows="10" cols="80"></textarea><br><br>
+    <button onclick="predict()">Predict</button>
+
+    <h3>Prediction:</h3>
+    <div id="result"></div>
+
+    <script>
+        async function predict() {
+            const inputText = document.getElementById("csv_input").value;
+            const values = inputText.split(',').map(v => parseFloat(v.trim()));
+            const keys = ["Population","Polio","Total_expenditure","Percentage_expenditure","Infant_deaths","Alcohol","Diphtheria","Year","BMI","Schooling","Thinness_5_9_years","Under_five_deaths","Income_composition_of_resources","Adult_Mortality","HIV_AIDS"];
+            
+            const data = [Object.fromEntries(keys.map((k,i)=>[k,values[i]]))];
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            document.getElementById("result").innerText = JSON.stringify(result, null, 2);
+        }
+    </script>
+</body>
+</html>
